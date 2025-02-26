@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votación elecciones gobierno escolar IEDTA JUAN FRANCISCO OSPINA</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            background: #004080;
+            color: white;
+            padding: 20px 10px;
+            font-size: 22px;
+        }
+        .header img {
+            position: absolute;
+            right: 20px;
+            width: 80px;
+            height: 80px;
+        }
+        h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+        }
+        .candidates-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .candidate {
+            text-align: center;
+            width: 45%;
+            max-width: 180px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0px 0px 5px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+        .candidate:hover {
+            transform: scale(1.05);
+        }
+        .candidate img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid #004080;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+            width: 100%;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #218838;
+        }
+        .results, .reset-container {
+            margin-top: 20px;
+        }
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-container button {
+            width: 90%;
+            max-width: 200px;
+        }
+        @media (max-width: 600px) {
+            .candidate {
+                width: 90%;
+            }
+            .header img {
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Votación Gobierno Escolar IEDTA JUAN FRANCISCO OSPINA</h1>
+        <img src="Logo de la escuela.Jpg" alt="Logo de la escuela">
+    </div>
+
+    <div class="container">
+        <h2>Candidatos a personero estudiantil</h2>
+        <div class="candidates-container" id="candidates"></div>
+
+        <div class="btn-container">
+            <button onclick="askPassword()">Ver Resultados</button>
+            <button onclick="askResetPassword()">Resetear Votación</button>
+        </div>
+
+        <div id="resultsSection" class="results" style="display:none;">
+            <h2>Resultados</h2>
+            <div id="results"></div>
+        </div>
+    </div>
+
+    <script>
+        const candidates = [
+            { id: 1, name: "1 - Juan Coronel", img: "juan_coronel.jpg" },
+            { id: 2, name: "2 - Diana Galván", img: "diana_galvan.jpg" },
+            { id: 3, name: "3 - Melquisedec Rodríguez", img: "melquisedec_rodriguez.jpg" },
+            { id: 4, name: "4 - Jesús Solano", img: "jesus_solano.jpg" }
+        ];
+
+        let votes = JSON.parse(localStorage.getItem("votes")) || [];
+
+        function renderCandidates() {
+            const container = document.getElementById("candidates");
+            container.innerHTML = "";
+            candidates.forEach(candidate => {
+                const div = document.createElement("div");
+                div.classList.add("candidate");
+                div.innerHTML = `
+                    <h3>${candidate.name}</h3>
+                    <img src="${candidate.img}" alt="${candidate.name}">
+                    <button onclick="vote(${candidate.id})">Votar</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function vote(candidateId) {
+            votes.push(candidateId);
+            localStorage.setItem("votes", JSON.stringify(votes));
+            alert("✅ Voto registrado con éxito.");
+        }
+
+        function askPassword() {
+            const password = prompt("Ingrese la contraseña para ver los resultados:");
+            if (password === "2025") {
+                showResults();
+            } else {
+                alert("❌ Contraseña incorrecta. No tienes acceso a los resultados.");
+            }
+        }
+
+        function showResults() {
+            const resultsContainer = document.getElementById("results");
+            const resultsSection = document.getElementById("resultsSection");
+            const count = candidates.map(candidate => {
+                return {
+                    name: candidate.name,
+                    votes: votes.filter(v => v === candidate.id).length
+                };
+            });
+            resultsContainer.innerHTML = count.map(c => `<p>${c.name}: ${c.votes} votos</p>`).join("");
+            resultsSection.style.display = "block";
+        }
+
+        function askResetPassword() {
+            const password = prompt("Ingrese la contraseña para resetear la votación:");
+            if (password === "2025") {
+                resetVotes();
+            } else {
+                alert("❌ Contraseña incorrecta. No puedes resetear la votación.");
+            }
+        }
+
+        function resetVotes() {
+            votes = [];
+            localStorage.setItem("votes", JSON.stringify(votes));
+            alert("🔄 Votación reiniciada con éxito.");
+            location.reload();
+        }
+
+        renderCandidates();
+    </script>
+
+</body>
+</html>
